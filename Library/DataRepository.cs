@@ -21,22 +21,20 @@ namespace Library
         {
             if (client != null)
                 DataContext.Clients.Add(client);
+            else
+                throw new ArgumentNullException();
         }
         public Client GetClientAtPosition(int position)
         {
-            try
-            {
-                return DataContext.Clients[position];
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
-            return null;
+            // throws ArgumentOutOfRangeException
+            return DataContext.Clients[position];
         }
         public Client GetClientById(int id)
         {
-            return DataContext.Clients.First(x => x.Id == id);
+            if (DataContext.Clients.Exists(x => x.Id == id))
+                return DataContext.Clients.First(x => x.Id == id);
+            else
+                return null;
         }
         public List<Client> GetAllClients()
         {
@@ -44,9 +42,10 @@ namespace Library
         }
         public void UpdateClientAtPosition(int position, Client newClientData)
         {
-            try
+            if (newClientData != null)
             {
-                Client client =  DataContext.Clients[position];
+                // throws ArgumentOutOfRangeException
+                Client client = DataContext.Clients[position];
                 if (client != null)
                 {
                     client.Address = newClientData.Address;
@@ -55,59 +54,61 @@ namespace Library
                     client.Name = newClientData.Name;
                     client.Surname = newClientData.Surname;
                 }
+                else
+                    throw new NullReferenceException();
             }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            else
+                throw new ArgumentNullException();
         }
-        public void UpdateClientById(int id, Client newClientData)
+        public bool UpdateClientById(int id, Client newClientData)
         {
-            Client client = DataContext.Clients.First(x => x.Id == id);
-            if (client != null)
+            if (newClientData != null)
             {
-                client.Address = newClientData.Address;
-                client.Email = newClientData.Email;
-                client.Name = newClientData.Name;
-                client.Surname = newClientData.Surname;
+                if (DataContext.Clients.Exists(x => x.Id == id))
+                {
+                    Client client = DataContext.Clients.First(x => x.Id == id);
+                    client.Address = newClientData.Address;
+                    client.Email = newClientData.Email;
+                    client.Name = newClientData.Name;
+                    client.Surname = newClientData.Surname;
+                    return true;
+                }
+                return false;
             }
+            else
+                throw new ArgumentNullException();
         }
         public void DeleteClientAtPosition(int position)
         {
-            try
-            {
-                DataContext.Clients.RemoveAt(position);
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            // throws ArgumentOutOfRangeException
+            DataContext.Clients.RemoveAt(position);
         }
-        public void DeleteClientById(int id)
+        public bool DeleteClientById(int id)
         {
-            Client client = DataContext.Clients.First(x => x.Id == id);
-            if (client != null)
-                DataContext.Clients.Remove(client);
+            if (DataContext.Clients.Exists(x => x.Id == id))
+            {
+                Client client = DataContext.Clients.First(x => x.Id == id);
+                return DataContext.Clients.Remove(client);
+            }
+            return false;
         }
         #endregion
         
         #region Product
         public void AddProduct(Product product)
         {
-            if (product != null && !DataContext.Products.ContainsKey(product.Id))
+            if (product != null)
+            {
+                // throws ArgumentException if duplicated key
                 DataContext.Products.Add(product.Id, product);
+            }
+            else
+                throw new ArgumentNullException();
         }
         public Product GetProductById(int id)
         {
-            try
-            {
-                return DataContext.Products[id];
-            }
-            catch(Exception)
-            {
-                // EMPTY
-            }
-            return null;
+            // throws KeyNotFoundException
+            return DataContext.Products[id];
         }
         public Dictionary<int, Product> GetAllProducts()
         {
@@ -115,8 +116,9 @@ namespace Library
         }
         public void UpdateProductById(int id, Product newProductData)
         {
-            try
+            if (newProductData != null)
             {
+                // throws KeyNotFoundException
                 Product product = DataContext.Products[id];
                 if (product != null)
                 {
@@ -124,22 +126,15 @@ namespace Library
                     product.Manufacture = newProductData.Manufacture;
                     product.Name = newProductData.Name;
                 }
+                else
+                    throw new NullReferenceException();
             }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            else
+                throw new ArgumentNullException();
         }
-        public void DeleteProductById(int id)
+        public bool DeleteProductById(int id)
         {
-            try
-            {
-                DataContext.Products.Remove(id);
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            return DataContext.Products.Remove(id);
         }
         #endregion
 
@@ -148,22 +143,20 @@ namespace Library
         {
             if (productVariant != null)
                 DataContext.ProductsVariants.Add(productVariant);
+            else
+                throw new ArgumentNullException();
         }
         public ProductVariant GetProductVariantAtPosition(int position)
         {
-            try
-            {
-                return DataContext.ProductsVariants[position];
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
-            return null;
+            // throws ArgumentOutOfRangeException
+            return DataContext.ProductsVariants[position];
         }
         public ProductVariant GetProductVariantById(int id)
         {
-            return DataContext.ProductsVariants.First(x => x.Id == id);
+            if (DataContext.ProductsVariants.Any(x => x.Id == id))
+                return DataContext.ProductsVariants.First(x => x.Id == id);
+            else
+                return null;
         }
         public ObservableCollection<ProductVariant> GetAllProductVariants()
         {
@@ -171,50 +164,55 @@ namespace Library
         }
         public void UpdateProductVariantAtPosition(int position, ProductVariant newProductVariantData)
         {
-            try
+            if (newProductVariantData != null)
             {
-                ProductVariant ProductVariant = DataContext.ProductsVariants[position];
-                if (ProductVariant != null)
+                // throws ArgumentOutOfRangeException
+                ProductVariant productVariant = DataContext.ProductsVariants[position];
+                if (productVariant != null)
                 {
-                    ProductVariant.Id = newProductVariantData.Id;
-                    ProductVariant.Price = newProductVariantData.Price;
-                    ProductVariant.Product = newProductVariantData.Product;
-                    ProductVariant.QuantityAvailable = newProductVariantData.QuantityAvailable;
-                    ProductVariant.VariantDescription = newProductVariantData.VariantDescription;
+                    productVariant.Id = newProductVariantData.Id;
+                    productVariant.Price = newProductVariantData.Price;
+                    productVariant.Product = newProductVariantData.Product;
+                    productVariant.QuantityAvailable = newProductVariantData.QuantityAvailable;
+                    productVariant.VariantDescription = newProductVariantData.VariantDescription;
                 }
+                else
+                    throw new NullReferenceException();
             }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            else
+                throw new ArgumentNullException();
         }
-        public void UpdateProductVariantById(int id, ProductVariant newProductVariantData)
+        public bool UpdateProductVariantById(int id, ProductVariant newProductVariantData)
         {
-            ProductVariant ProductVariant = DataContext.ProductsVariants.First(x => x.Id == id);
-            if (ProductVariant != null)
+            if (newProductVariantData != null)
             {
-                ProductVariant.Price = newProductVariantData.Price;
-                ProductVariant.Product = newProductVariantData.Product;
-                ProductVariant.QuantityAvailable = newProductVariantData.QuantityAvailable;
-                ProductVariant.VariantDescription = newProductVariantData.VariantDescription;
+                if (DataContext.ProductsVariants.Any(x => x.Id == id))
+                {
+                    ProductVariant productVariant = DataContext.ProductsVariants.First(x => x.Id == id);
+                    productVariant.Price = newProductVariantData.Price;
+                    productVariant.Product = newProductVariantData.Product;
+                    productVariant.QuantityAvailable = newProductVariantData.QuantityAvailable;
+                    productVariant.VariantDescription = newProductVariantData.VariantDescription;
+                    return true;
+                }
+                return false;
             }
+            else
+                throw new ArgumentNullException();
         }
         public void DeleteProductVariantAtPosition(int position)
         {
-            try
-            {
-                DataContext.ProductsVariants.RemoveAt(position);
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            // throws ArgumentOutOfRangeException
+            DataContext.ProductsVariants.RemoveAt(position);
         }
-        public void DeleteProductVariantById(int id)
+        public bool DeleteProductVariantById(int id)
         {
-            ProductVariant ProductVariant = DataContext.ProductsVariants.First(x => x.Id == id);
-            if (ProductVariant != null)
-                DataContext.ProductsVariants.Remove(ProductVariant);
+            if (DataContext.ProductsVariants.Any(x => x.Id == id))
+            {
+                ProductVariant ProductVariant = DataContext.ProductsVariants.First(x => x.Id == id);
+                return DataContext.ProductsVariants.Remove(ProductVariant);
+            }
+            return false;
         }
         #endregion
         
@@ -223,22 +221,20 @@ namespace Library
         {
             if (order != null)
                 DataContext.Orders.Add(order);
+            else
+                throw new ArgumentNullException();
         }
         public Order GetOrderAtPosition(int position)
         {
-            try
-            {
-                return DataContext.Orders[position];
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
-            return null;
+            // throws ArgumentOutOfRangeException
+            return DataContext.Orders[position];
         }
         public Order GetOrderById(int id)
         {
-            return DataContext.Orders.First(x => x.Id == id);
+            if (DataContext.Orders.Any(x => x.Id == id))
+                return DataContext.Orders.First(x => x.Id == id);
+            else
+                return null;
         }
         public ObservableCollection<Order> GetAllOrders()
         {
@@ -246,8 +242,9 @@ namespace Library
         }
         public void UpdateOrderAtPosition(int position, Order newOrderData)
         {
-            try
+            if (newOrderData != null)
             {
+                // throws ArgumentOutOfRangeException
                 Order order = DataContext.Orders[position];
                 if (order != null)
                 {
@@ -257,39 +254,43 @@ namespace Library
                     order.ProductVariant = newOrderData.ProductVariant;
                     order.Quantity = newOrderData.Quantity;
                 }
+                else
+                    throw new NullReferenceException();
             }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            else
+                throw new ArgumentNullException();
         }
-        public void UpdateOrderById(int id, Order newOrderData)
+        public bool UpdateOrderById(int id, Order newOrderData)
         {
-            Order order = DataContext.Orders.First(x => x.Id == id);
-            if (order != null)
+            if (newOrderData != null)
             {
-                order.Client = newOrderData.Client;
-                order.OrderDate = newOrderData.OrderDate;
-                order.ProductVariant = newOrderData.ProductVariant;
-                order.Quantity = newOrderData.Quantity;
+                if (DataContext.Orders.Any(x => x.Id == id))
+                {
+                    Order order = DataContext.Orders.First(x => x.Id == id);
+                    order.Client = newOrderData.Client;
+                    order.OrderDate = newOrderData.OrderDate;
+                    order.ProductVariant = newOrderData.ProductVariant;
+                    order.Quantity = newOrderData.Quantity;
+                    return true;
+                }
+                return false;
             }
+            else
+                throw new ArgumentNullException();
         }
         public void DeleteOrderAtPosition(int position)
         {
-            try
-            {
-                DataContext.Orders.RemoveAt(position);
-            }
-            catch (Exception)
-            {
-                // EMPTY
-            }
+            // throws ArgumentOutOfRangeException
+            DataContext.Orders.RemoveAt(position);
         }
-        public void DeleteOrderById(int id)
+        public bool DeleteOrderById(int id)
         {
-            Order order = DataContext.Orders.First(x => x.Id == id);
-            if (order != null)
-                DataContext.Orders.Remove(order);
+            if (DataContext.Orders.Any(x => x.Id == id))
+            {
+                Order order = DataContext.Orders.First(x => x.Id == id);
+                return DataContext.Orders.Remove(order);
+            }
+            return false;
         }
         #endregion
     }
