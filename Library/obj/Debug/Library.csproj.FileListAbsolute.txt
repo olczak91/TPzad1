@@ -1,0 +1,5 @@
+G:\Projekty\Programowanie\Zad1\Library\bin\Debug\Library.dll
+G:\Projekty\Programowanie\Zad1\Library\bin\Debug\Library.pdb
+G:\Projekty\Programowanie\Zad1\Library\obj\Debug\Library.csprojResolveAssemblyReference.cache
+G:\Projekty\Programowanie\Zad1\Library\obj\Debug\Library.dll
+G:\Projekty\Programowanie\Zad1\Library\obj\Debug\Library.pdb
